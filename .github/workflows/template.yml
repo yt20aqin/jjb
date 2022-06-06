@@ -1,0 +1,27 @@
+name: APK Build CI
+
+on: push
+
+jobs:
+
+  build-upload:
+    runs-on: windows-latest
+    steps:
+
+      - uses: actions/setup-java@v1.3.0
+        with:
+          java-version: '12.x'
+
+      - name: Generating debug keystore and SHA1 key
+        shell: powershell
+        run: |
+          md C:\Users\medfa\.android
+          keytool -genkey -dname "cn=Abhishek Dubey, ou=DSCBVPPUNE, o=Google, l=Pune, st=Maharashtra, c=IN" -keystore C:\Users\medfa\.android\debug.keystore -storepass android -alias AndroidDebugKey -keyalg RSA -keysize 4096 -validity 10000 -v
+
+      - name: Displaying debug.keystore file
+        shell: powershell
+        run: keytool -list -v -keystore C:\Users\medfa\.android\debug.keystore -alias AndroidDebugKey -storepass android -keypass android
+
+      - uses: subosito/flutter-action@v1.2.0
+        with:
+          channel: 'stable'
